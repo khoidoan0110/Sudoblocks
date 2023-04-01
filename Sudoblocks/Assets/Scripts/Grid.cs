@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    public ShapeStorage shapeStorage;
     public int columns = 0;
     public int rows = 0;
     public float gap = 0.1f;
@@ -16,6 +17,16 @@ public class Grid : MonoBehaviour
     private Vector2 offset = new Vector2(0, 0);
     private List<GameObject> _gridSquares = new List<GameObject>();
 
+
+    private void OnEnable()
+    {
+        GameEvents.CheckIfShapeFits += CheckIfShapeFits;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.CheckIfShapeFits -= CheckIfShapeFits;
+    }
     void Start()
     {
         CreateGrid();
@@ -38,6 +49,7 @@ public class Grid : MonoBehaviour
             for (int col = 0; col < columns; col++)
             {
                 _gridSquares.Add(Instantiate(gridSquare));
+                _gridSquares[_gridSquares.Count - 1].GetComponent<GridSquare>().SquareIdx = squareIdx;
                 _gridSquares[_gridSquares.Count - 1].transform.SetParent(this.transform);
                 _gridSquares[_gridSquares.Count - 1].transform.localScale = new Vector3(squareScale, squareScale, squareScale);
 
@@ -90,6 +102,32 @@ public class Grid : MonoBehaviour
             square.GetComponent<RectTransform>().localPosition = new Vector3(startPosition.x + pos_x_offset, startPosition.y - pos_y_offset, 0);
 
             col_number++;
+        }
+    }
+
+    private void CheckIfShapeFits()
+    {
+        var squareIndexes = new List<int>();
+        foreach (var square in _gridSquares)
+        {
+            var gridSquare = square.GetComponent<GridSquare>();
+            if (gridSquare.selected && !gridSquare.SquareOccupied)
+            {
+                squareIndexes.Add(gridSquare.SquareIdx);
+                gridSquare.selected = false;
+                //gridSquare.ActivateSquare();
+            }
+        }
+        var currentSelectedShape = shapeStorage.GetCurrentSelectedShape();
+        if(currentSelectedShape == null) return; // no selected shape
+        if(currentSelectedShape.TotalSquareNumber == squareIndexes.Count){
+            foreach(var squareIndex in squareIndexes){
+                _gridSquares[squareIndex].GetComponent<GridSquare>().PlaceShapeOnBoard();
+            }
+            currentSelectedShape.DeactivateShape();
+        }
+        else{
+            GameEvents.MoveShapeToStartPosition();
         }
     }
 }

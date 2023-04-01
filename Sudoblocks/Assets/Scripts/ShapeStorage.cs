@@ -14,6 +14,14 @@ public class ShapeStorage : MonoBehaviour
         }
     }
 
+    private void OnEnable(){
+        GameEvents.RequestNewShapes += RequestNewShapes;
+    }
+
+    private void OnDisable(){
+        GameEvents.RequestNewShapes -= RequestNewShapes;
+    }
+
     public Shape GetCurrentSelectedShape(){
         foreach(var shape in shapeList){
             if(shape.IsOnStartPosition() == false && shape.IsAnyOfShapeSquareActive()){
@@ -23,5 +31,12 @@ public class ShapeStorage : MonoBehaviour
 
         Debug.LogError("There is no shape selected!");
         return null;
+    }
+
+    private void RequestNewShapes(){
+        foreach(var shape in shapeList){
+            int shapeIndex = Random.Range(0, shapeData.Count);
+            shape.RequestNewShape(shapeData[shapeIndex]);
+        }
     }
 }

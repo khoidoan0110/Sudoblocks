@@ -33,10 +33,12 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
 
     private void OnEnable(){
         GameEvents.MoveShapeToStartPosition += MoveShapeToStartPosition;
+        GameEvents.SetShapeInactive += SetShapeInactive;
     }
 
     private void OnDisable(){
         GameEvents.MoveShapeToStartPosition -= MoveShapeToStartPosition;
+        GameEvents.SetShapeInactive -= SetShapeInactive;
     }
 
     public bool IsOnStartPosition(){
@@ -57,6 +59,14 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
             }
         }
         _shapeActive = false;
+    }
+
+    private void SetShapeInactive(){
+        if(IsOnStartPosition() == false && IsAnyOfShapeSquareActive()){
+            foreach(var square in _currentShape){
+                square.gameObject.SetActive(false);
+            }
+        }
     }
 
     public void ActivateShape(){
@@ -248,9 +258,9 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
 
     public void OnDrag(PointerEventData eventData)
     {
-        _transform.anchorMin = new Vector2(0, 0);
-        _transform.anchorMax = new Vector2(0, 0);
-        _transform.pivot = new Vector2(0, 0);
+        // _transform.anchorMin = new Vector2(0, 0);
+        // _transform.anchorMax = new Vector2(0, 0);
+        // _transform.pivot = new Vector2(0, 0);
 
         Vector2 pos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvas.transform as RectTransform, eventData.position, Camera.main, out pos);

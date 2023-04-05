@@ -7,6 +7,12 @@ public class GridSquare : MonoBehaviour
 {
     public Image defaultImg, hoverImg, activeImg;
     public List<Sprite> defaultImgs;
+    private Config.SquareColors currentSquareColor = Config.SquareColors.NotSet;
+
+    public Config.SquareColors GetCurrentColor()
+    {
+        return currentSquareColor;
+    }
 
     public bool selected { get; set; }
     public int SquareIdx { get; set; }
@@ -24,8 +30,10 @@ public class GridSquare : MonoBehaviour
         return hoverImg.gameObject.activeSelf;
     }
 
-    public void PlaceShapeOnBoard()
+    public void PlaceShapeOnBoard(Config.SquareColors color)
     {
+        AudioManager.instance.PlaySFX("Place", 1.2f);
+        currentSquareColor = color;
         ActivateSquare();
     }
 
@@ -37,11 +45,15 @@ public class GridSquare : MonoBehaviour
         SquareOccupied = true;
     }
 
-    public void Deactivate(){
+    public void Deactivate()
+    {
+        currentSquareColor = Config.SquareColors.NotSet;
         activeImg.gameObject.SetActive(false);
     }
 
-    public void ClearOccupied(){
+    public void ClearOccupied()
+    {
+        currentSquareColor = Config.SquareColors.NotSet;
         selected = false;
         SquareOccupied = false;
     }
@@ -58,7 +70,8 @@ public class GridSquare : MonoBehaviour
             selected = true;
             hoverImg.gameObject.SetActive(true);
         }
-        else if(collision.GetComponent<ShapeSquare>() != null){
+        else if (collision.GetComponent<ShapeSquare>() != null)
+        {
             collision.GetComponent<ShapeSquare>().SetOccupied();
         }
     }
@@ -79,7 +92,8 @@ public class GridSquare : MonoBehaviour
             selected = false;
             hoverImg.gameObject.SetActive(false);
         }
-        else if(collision.GetComponent<ShapeSquare>() != null){
+        else if (collision.GetComponent<ShapeSquare>() != null)
+        {
             collision.GetComponent<ShapeSquare>().UnsetOccupied();
         }
     }

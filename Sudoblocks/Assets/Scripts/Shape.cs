@@ -17,7 +17,6 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     private List<GameObject> _currentShape = new List<GameObject>();
     private Vector3 _shapeStartScale;
     private RectTransform _transform;
-    private bool _shapeDraggable = true;
     private Canvas _canvas;
     private Vector3 _startPosition;
     private bool _shapeActive = true;
@@ -26,7 +25,6 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         _shapeStartScale = this.GetComponent<RectTransform>().localScale;
         _transform = this.GetComponent<RectTransform>();
         _canvas = GetComponentInParent<Canvas>();
-        _shapeDraggable = true;
         _startPosition = _transform.localPosition;
         _shapeActive = true;
     }

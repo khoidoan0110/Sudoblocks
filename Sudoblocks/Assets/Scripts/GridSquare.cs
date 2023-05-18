@@ -5,56 +5,45 @@ using UnityEngine.UI;
 
 public class GridSquare : MonoBehaviour
 {
-    public Image defaultImg, hoverImg, activeImg;
-    public List<Sprite> defaultImgs;
-    private Config.SquareColors currentSquareColor = Config.SquareColors.NotSet;
+    [SerializeField] private Image defaultImg, hoverImg, activeImg, completableImg;
+    [SerializeField] private List<Sprite> defaultImgs;
 
-    public Config.SquareColors GetCurrentColor()
-    {
-        return currentSquareColor;
-    }
-
-    public bool selected { get; set; }
+    public bool Selected { get; set; }
     public int SquareIdx { get; set; }
     public bool SquareOccupied { get; set; }
-
+    public bool SquareHovered { get; set; }
+    public bool ShapeBlocked { get; set; }
     void Start()
     {
-        selected = false;
+        Selected = false;
         SquareOccupied = false;
     }
 
-    //temp
-    public bool CanBePlaced()
+    void Update()
     {
-        return hoverImg.gameObject.activeSelf;
+        if (hoverImg.gameObject.activeSelf)
+        {
+            SquareHovered = true;
+        }
+        else
+        {
+            SquareHovered = false;
+        }
     }
 
-    public void PlaceShapeOnBoard(Config.SquareColors color)
+    public void ActivateGridSquare()
     {
         AudioManager.instance.PlaySFX("Place", 1.2f);
-        currentSquareColor = color;
-        ActivateSquare();
-    }
-
-    public void ActivateSquare()
-    {
         hoverImg.gameObject.SetActive(false);
         activeImg.gameObject.SetActive(true);
-        selected = true;
+        Selected = true;
         SquareOccupied = true;
     }
 
-    public void Deactivate()
+    public void DeactivateGridSquare()
     {
-        currentSquareColor = Config.SquareColors.NotSet;
         activeImg.gameObject.SetActive(false);
-    }
-
-    public void ClearOccupied()
-    {
-        currentSquareColor = Config.SquareColors.NotSet;
-        selected = false;
+        Selected = false;
         SquareOccupied = false;
     }
 
@@ -63,25 +52,53 @@ public class GridSquare : MonoBehaviour
         defaultImg.GetComponent<Image>().sprite = setFirstImg ? defaultImgs[1] : defaultImgs[0];
     }
 
+    public void Highlight()
+    {
+        completableImg.gameObject.SetActive(true);
+    }
+
+    public void Unhighlight()
+    {
+        completableImg.gameObject.SetActive(false);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (SquareOccupied == false)
+        if (SquareOccupied == false) // shape hasn't been placed
         {
-            selected = true;
+            Selected = true;
             hoverImg.gameObject.SetActive(true);
         }
-        else if (collision.GetComponent<ShapeSquare>() != null)
+        else if (collision.GetComponent<ShapeSquare>() != null) // change color to red when collide with other blocks
         {
-            collision.GetComponent<ShapeSquare>().SetOccupied();
+            ShapeBlocked = true;
+            GameObject parentObj = collision.transform.parent.gameObject; // get the ShapeMid, ShapeLeft or ShapeRight
+            for (int i = 0; i < parentObj.transform.childCount - 1; i++)
+            {
+                Transform child = parentObj.transform.GetChild(i);
+                ActiveSquareImageSelector activeSquareImageSelector = child.GetComponentInChildren<ActiveSquareImageSelector>();
+                activeSquareImageSelector.updateImageOnGridCondition = true;
+            }
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        selected = true;
-        if (SquareOccupied == false) //&& !hoverImg.gameObject.activeSelf)
+        if (SquareOccupied == false) // shape hasn't been placed
         {
+            Selected = true;
             hoverImg.gameObject.SetActive(true);
+        }
+        else if (collision.GetComponent<ShapeSquare>() != null)
+        {
+            ShapeBlocked = true;
+            GameObject parentObj = collision.transform.parent.gameObject;
+            for (int i = 0; i < parentObj.transform.childCount - 1; i++)
+            {
+                Transform child = parentObj.transform.GetChild(i);
+                ActiveSquareImageSelector activeSquareImageSelector = child.GetComponentInChildren<ActiveSquareImageSelector>();
+                activeSquareImageSelector.updateImageOnGridCondition = true;
+            }
         }
     }
 
@@ -89,12 +106,19 @@ public class GridSquare : MonoBehaviour
     {
         if (SquareOccupied == false)
         {
-            selected = false;
+            Selected = false;
             hoverImg.gameObject.SetActive(false);
         }
-        else if (collision.GetComponent<ShapeSquare>() != null)
+        else if (collision.GetComponent<ShapeSquare>() != null) // change color to red when collide with other blocks
         {
-            collision.GetComponent<ShapeSquare>().UnsetOccupied();
+            ShapeBlocked = false;
+            GameObject parentObj = collision.transform.parent.gameObject; // get the ShapeMid, ShapeLeft or ShapeRight
+            for (int i = 0; i < parentObj.transform.childCount - 1; i++)
+            {
+                Transform child = parentObj.transform.GetChild(i);
+                ActiveSquareImageSelector activeSquareImageSelector = child.GetComponentInChildren<ActiveSquareImageSelector>();
+                activeSquareImageSelector.updateImageOnGridCondition = false;
+            }
         }
     }
 

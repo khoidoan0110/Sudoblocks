@@ -11,7 +11,6 @@ public class BestScoreData
 
 public class Scores : MonoBehaviour
 {
-    public SquareTextureData squareTextureData;
     public TextMeshProUGUI scoreTxt, gameOverScoreTxt;
     private BestScoreData _bestScore = new BestScoreData();
     private int _currentScore;
@@ -35,7 +34,6 @@ public class Scores : MonoBehaviour
     void Start()
     {
         _currentScore = 0;
-        squareTextureData.SetStartColor();
         UpdateScoreText();
     }
 
@@ -65,18 +63,17 @@ public class Scores : MonoBehaviour
             SaveBestScore();
         }
 
-        UpdateSquareColor();
+        //UpdateSquareColor();
         GameEvents.UpdateBestScoreBar(_currentScore, _bestScore.score);
         UpdateScoreText();
     }
 
-    private void UpdateSquareColor()
-    {
-        if(GameEvents.UpdateSquareColor != null && _currentScore >= squareTextureData.thresholdValue){
-            squareTextureData.UpdateColors(_currentScore);
-            GameEvents.UpdateSquareColor(squareTextureData.currentColor);
-        }
-    }
+    // private void UpdateSquareColor(){
+    //     if(GameEvents.UpdateSquareColor != null && _currentScore >= squareTextureData.thresholdVal){
+    //         squareTextureData.UpdateColors(_currentScore);
+    //         GameEvents.UpdateSquareColor(squareTextureData.currentColor);
+    //     }
+    // }
 
     private void UpdateScoreText()
     {

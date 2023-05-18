@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
+public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public GameObject squareShapeImage;
-    public Vector3 shapeSelectedScale;
-    public Vector2 offset = new Vector2(0f, 700f);
+    [SerializeField] private GameObject squareShapeImage;
+    [SerializeField] private Vector3 shapeSelectedScale;
+    [SerializeField] private Vector2 offset = new Vector2(0f, 0f);
 
     [HideInInspector]
     public ShapeData CurrentShapeData;
@@ -20,6 +20,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     private Canvas _canvas;
     private Vector3 _startPosition;
     private bool _shapeActive = true;
+    private Grid _grid;
 
     void Awake(){
         _shapeStartScale = this.GetComponent<RectTransform>().localScale;
@@ -27,6 +28,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         _canvas = GetComponentInParent<Canvas>();
         _startPosition = _transform.localPosition;
         _shapeActive = true;
+        _grid = FindObjectOfType<Grid>();
     }
 
     private void OnEnable(){
@@ -225,28 +227,18 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
 
     private int GetNumberOfSquares(ShapeData shapeData)
     {
-        int number = 0;
+        int count = 0;
         foreach (var rowData in shapeData.board)
         {
             foreach (var active in rowData.column)
             {
                 if (active)
                 {
-                    number++;
+                    count++;
                 }
             }
         }
-        return number;
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        
+        return count;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -256,18 +248,9 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
 
     public void OnDrag(PointerEventData eventData)
     {
-        // _transform.anchorMin = new Vector2(0, 0);
-        // _transform.anchorMax = new Vector2(0, 0);
-        // _transform.pivot = new Vector2(0, 0);
-
         Vector2 pos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvas.transform as RectTransform, eventData.position, Camera.main, out pos);
         _transform.localPosition = pos + offset;
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        
     }
 
     public void OnEndDrag(PointerEventData eventData)

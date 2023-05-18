@@ -5,44 +5,32 @@ using UnityEngine.UI;
 
 public class ActiveSquareImageSelector : MonoBehaviour
 {
-    public SquareTextureData squareTextureData;
-    public bool updateImageOnReachedThreshold = false;
+    private Image defaultImage;
+    public List<Sprite> sprites;
+    [HideInInspector]
+    public bool updateImageOnCondition, updateImageOnGridCondition = false;
 
-    private void OnEnable()
+    void Start()
     {
-        UpdateSquareOnPoints();
+        defaultImage = GetComponent<Image>();
+        UpdateShapeColor(sprites[0]);
+    }
 
-        if(updateImageOnReachedThreshold){
-            GameEvents.UpdateSquareColor += UpdateSquareColor;
+    void Update()
+    {
+        if(updateImageOnCondition){
+            UpdateShapeColor(sprites[1]); // tinted-blue, cannot place anymore
+        }
+        else if(updateImageOnGridCondition){
+            UpdateShapeColor(sprites[2]); // red, making contact with other blocks
+        }
+        else{
+            UpdateShapeColor(sprites[0]); // blue
         }
     }
 
-    private void OnDisable()
+    public void UpdateShapeColor(Sprite sprite)
     {
-        if(updateImageOnReachedThreshold){
-            GameEvents.UpdateSquareColor -= UpdateSquareColor;
-        }
-    }
-
-    private void UpdateSquareOnPoints()
-    {
-        foreach (var squareTexture in squareTextureData.activeSquareTextures)
-        {
-            if (squareTextureData.currentColor == squareTexture.squareColors)
-            {
-                GetComponent<Image>().sprite = squareTexture.texture;
-            }
-        }
-    }
-
-    private void UpdateSquareColor(Config.SquareColors color)
-    {
-        foreach (var squareTexture in squareTextureData.activeSquareTextures)
-        {
-            if (color == squareTexture.squareColors)
-            {
-                GetComponent<Image>().sprite = squareTexture.texture;
-            }
-        }
+        defaultImage.sprite = sprite;
     }
 }

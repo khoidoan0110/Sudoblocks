@@ -35,37 +35,47 @@ public class LineIndicator : MonoBehaviour
         0, 1, 2, 3, 4, 5, 6, 7, 8
     };
 
-    private (int, int) GetSquarePosition(int squareIndex){
-        int pos_row = 1;
-        int pos_col = 1;
+    private (int, int) GetSquarePosition(int squareIndex)
+    {
+        int posRow = 1;
+        int posCol = 1;
 
-        for(int row = 0; row < 9; row++){
-            for(int col = 0; col < 9; col++){
-                if(LineData[row, col] == squareIndex){
-                    pos_row = row;
-                    pos_col = col;
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (LineData[row, col] == squareIndex)
+                {
+                    posRow = row;
+                    posCol = col;
                 }
             }
         }
-        return (pos_row, pos_col);
+        return (posRow, posCol);
     }
 
-    public int[] GetVerticalLine(int squareIndex){
+    public int[] GetVerticalLine(int squareIndex)
+    {
         int[] line = new int[9];
 
         int squarePositionColumn = GetSquarePosition(squareIndex).Item2;
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++)
+        {
             line[i] = LineData[i, squarePositionColumn];
         }
-        
+
         return line;
     }
 
-    public int GetGridSquareIndex(int square){
-        for (int row = 0; row < 9; row++){
-            for (int col = 0; col < 9; col++){
-                if(SquareData[row, col] == square){
+    public int GetGridSquareIndex(int square)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (SquareData[row, col] == square)
+                {
                     return row;
                 }
             }

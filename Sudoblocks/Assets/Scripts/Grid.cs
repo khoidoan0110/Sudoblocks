@@ -9,6 +9,7 @@ public class Grid : MonoBehaviour
     [SerializeField] private ShapeStorage shapeStorage;
     [SerializeField] private int columns;
     [SerializeField] private int rows;
+    public bool isHighlighted { get; private set; }
     private int squares = 9;
     [SerializeField] private float gap;
     [SerializeField] private GameObject gridSquare;
@@ -180,6 +181,15 @@ public class Grid : MonoBehaviour
             {
                 highlightedLines.Add(line);
             }
+        }
+
+        if (highlightedLines.Count != 0)
+        {
+            isHighlighted = true;
+        }
+        else
+        {
+            isHighlighted = false;
         }
 
         foreach (var line in highlightedLines)
